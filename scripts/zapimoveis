@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+import json
+from optparse import OptionParser, IndentedHelpFormatter
+from zapimoveis_scraper import search
+
+
+class BannerHelpFormatter(IndentedHelpFormatter):
+    "Just a small tweak to optparse to be able to print a banner."
+    def __init__(self, banner, *argv, **argd):
+        self.banner = banner
+        IndentedHelpFormatter.__init__(self, *argv, **argd)
+
+    def format_usage(self, usage):
+        msg = IndentedHelpFormatter.format_usage(self, usage)
+        return '%s\n%s' % (self.banner, msg)
+
+
+# Parse the command line arguments.
+formatter = BannerHelpFormatter(
+    "ZAP Imóveis crawler and scraper using beautifulsoup4 and requests\n"
+    "By Geovany Rodrigues\n"
+    "https://github.com/GeovRodri/zapimoveis-scraper\n"
+)
+
+# parser = OptionParser(formatter=formatter)
+# parser.set_usage("%prog [options] query")
+# (options, args) = parser.parse_args()
+
+# query = ' '.join(args)
+
+# if not query:
+#     parser.print_help()
+#     sys.exit(2)
+
+# Run the query.
+for item in search():
+    print(json.dumps(item))
