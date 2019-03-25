@@ -39,15 +39,14 @@ chdir(here)
 metadata = dict(
     name='zapimoveis_scraper',
     provides=['zapimoveis_scraper'],
-    requires=['beautifulsoup4', 'requests'],
+    requires=['beautifulsoup4'],
     packages=['zapimoveis_scraper'],
     scripts=[join('scripts', 'zapimoveis')],
-    package_data={'zapimoveis_scraper': ['item.py']},
-    include_package_data=True,
-    version="0.0.1",
+    version="0.1.1",
     description="ZAP Imóveis crawler and scraper using beautifulsoup4",
     author="Geovany Rodrigues",
     author_email="geovanyscv@gmail.com",
+    url='https://github.com/GeovRodri/zapimoveis-scraper',
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
