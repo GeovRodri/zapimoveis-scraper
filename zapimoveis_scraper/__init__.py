@@ -27,12 +27,9 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
-import time
-import math
-import requests
-from urllib.parse import quote_plus
+from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
+from zapimoveis_scraper.item import ZapItem
 
 __all__ = [
     # Main search function.
@@ -44,16 +41,48 @@ __all__ = [
 url_home = "https://www.zapimoveis.com.br/venda/casas/go+goiania++setor-marista/"
 
 # Default user agent, unless instructed by the user to change it.
-USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)'
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
 
 
 def get_page(url):
-    request = requests.get(url, headers={'User-Agent', USER_AGENT})
-    html = request.content
-    request.close()
-    return html
+    request = Request(url)
+    request.add_header('User-Agent', USER_AGENT)
+    response = urlopen(request)
+    return response
 
+def get_text(element):
+    if element is not None:
+        return element.getText()
+
+    return ''
 
 def search():
     # Grab the cookie from the home page.
-    get_page(url_home % vars())
+    html = get_page(url_home)
+    soup = BeautifulSoup(html, 'html.parser')
+    items = []
+
+    houses_cards = soup.find_all(attrs={"class": "minificha"})
+    for house_card in houses_cards:
+        specifications = house_card.find(attrs={"class": "caracteristicas"})
+
+        item = ZapItem()
+        item.price = get_text(specifications.find(attrs={"class": "preco"}))
+        item.bedrooms = get_text(specifications.find(attrs={"class": "icone-quartos"}))
+        item.suites = get_text(specifications.find(attrs={"class": "icone-suites"}))
+        item.vacancies = get_text(specifications.find(attrs={"class": "icone-vagas"}))
+        item.total_area_m2 = get_text(specifications.find(attrs={"class": "icone-area"}))
+
+        address = house_card.find(attrs={"class": "endereco"})
+        item.district = get_text(address.find(attrs={"class": "streetAddress"}))
+        item.country = get_text(address.find(attrs={"class": "addressCountry"}))
+        item.postal_code = get_text(address.find(attrs={"class": "postalCode"}))
+        item.street = get_text(address.find(attrs={"class": "streetAddress"}))
+        item.city = get_text(address.find(attrs={"class": "addressLocality"}))
+        item.state = get_text(address.find(attrs={"class": "addressRegion"}))
+
+        item.description = get_text(house_card.find(attrs={"class": "description"}))
+
+        items.append(item)
+
+    return items
