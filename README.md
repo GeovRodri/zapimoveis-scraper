@@ -1,7 +1,7 @@
 Zap Imoveis
 ============
 
-ZAP Imóveis crawler and scraper using beautifulsoup4 and requests.
+ZAP Imóveis crawler and scraper using beautifulsoup4.
 
 Usage example
 -------------

@@ -17,21 +17,24 @@ class BannerHelpFormatter(IndentedHelpFormatter):
 
 # Parse the command line arguments.
 formatter = BannerHelpFormatter(
-    "ZAP Imóveis crawler and scraper using beautifulsoup4 and requests\n"
+    "ZAP Imóveis crawler and scraper using beautifulsoup4\n"
     "By Geovany Rodrigues\n"
     "https://github.com/GeovRodri/zapimoveis-scraper\n"
 )
 
-# parser = OptionParser(formatter=formatter)
-# parser.set_usage("%prog [options] query")
-# (options, args) = parser.parse_args()
-
-# query = ' '.join(args)
-
-# if not query:
-#     parser.print_help()
-#     sys.exit(2)
+parser = OptionParser(formatter=formatter)
+parser.add_option("--localization", metavar="LOCALIZATION", type="string", default="go+goiania++setor-marista",
+                  help="Localidade, pode ser adquirida no site.")
+parser.add_option("--num_pages", metavar="NUM_PAGES", type="int", default=1,
+                  help="Número maximo de páginas.")
+parser.add_option("--acao", metavar="ACAO", type="string", default="aluguel",
+                  help="Ação do imovel (alugar, comprar ou lançamentos)")
+parser.add_option("--tipo", metavar="TIPO", type="string", default="imoveis",
+                  help="Tipo do imovel")
+(options, args) = parser.parse_args()
+params = [(k, v) for (k, v) in options.__dict__.items() if not k.startswith('_')]
+params = dict(params)
 
 # Run the query.
-for item in search():
-    print(json.dumps(item))
+for item in search(**params):
+    print(item.url)

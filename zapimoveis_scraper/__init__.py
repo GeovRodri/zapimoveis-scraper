@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
+
+from zapimoveis_scraper.enums import ZapAcao, ZapTipo
 from zapimoveis_scraper.item import ZapItem
 
 __all__ = [
@@ -38,7 +40,7 @@ __all__ = [
 
 
 # URL templates to make urls searches.
-url_home = "https://www.zapimoveis.com.br/venda/casas/go+goiania++setor-marista/"
+url_home = "https://www.zapimoveis.com.br/%(acao)s/%(tipo)s/%(localization)s/#{\"pagina\":\"%(page)s\",\"formato\":\"Lista\"}"
 
 # Default user agent, unless instructed by the user to change it.
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
@@ -50,39 +52,48 @@ def get_page(url):
     response = urlopen(request)
     return response
 
-def get_text(element):
+
+def __get_text(element, content=False):
     if element is not None:
-        return element.getText()
+        if content is False:
+            return element.getText()
+        else:
+            return element.get("content")
 
     return ''
 
-def search():
-    # Grab the cookie from the home page.
-    html = get_page(url_home)
-    soup = BeautifulSoup(html, 'html.parser')
+
+def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.casas.value):
+    page = 1
     items = []
 
-    houses_cards = soup.find_all(attrs={"class": "minificha"})
-    for house_card in houses_cards:
-        specifications = house_card.find(attrs={"class": "caracteristicas"})
+    while page <= num_pages:
+        html = get_page(url_home % vars())
+        soup = BeautifulSoup(html, 'html.parser')
 
-        item = ZapItem()
-        item.price = get_text(specifications.find(attrs={"class": "preco"}))
-        item.bedrooms = get_text(specifications.find(attrs={"class": "icone-quartos"}))
-        item.suites = get_text(specifications.find(attrs={"class": "icone-suites"}))
-        item.vacancies = get_text(specifications.find(attrs={"class": "icone-vagas"}))
-        item.total_area_m2 = get_text(specifications.find(attrs={"class": "icone-area"}))
+        houses_cards = soup.find_all(attrs={"class": "minificha"})
+        for house_card in houses_cards:
+            specifications = house_card.find(attrs={"class": "caracteristicas"})
 
-        address = house_card.find(attrs={"class": "endereco"})
-        item.district = get_text(address.find(attrs={"class": "streetAddress"}))
-        item.country = get_text(address.find(attrs={"class": "addressCountry"}))
-        item.postal_code = get_text(address.find(attrs={"class": "postalCode"}))
-        item.street = get_text(address.find(attrs={"class": "streetAddress"}))
-        item.city = get_text(address.find(attrs={"class": "addressLocality"}))
-        item.state = get_text(address.find(attrs={"class": "addressRegion"}))
+            item = ZapItem()
+            item.price = __get_text(specifications.find(attrs={"class": "preco"}))
+            item.bedrooms = __get_text(specifications.find(attrs={"class": "icone-quartos"}))
+            item.suites = __get_text(specifications.find(attrs={"class": "icone-suites"}))
+            item.vacancies = __get_text(specifications.find(attrs={"class": "icone-vagas"}))
+            item.total_area_m2 = __get_text(specifications.find(attrs={"class": "icone-area"}))
 
-        item.description = get_text(house_card.find(attrs={"class": "description"}))
+            address = house_card.find(attrs={"class": "endereco"})
+            item.district = __get_text(address.find("strong"))
+            item.country = __get_text(address.find(attrs={"itemprop": "addressCountry"}), True)
+            item.postal_code = __get_text(address.find(attrs={"itemprop": "postalCode"}), True)
+            item.street = __get_text(address.find(attrs={"itemprop": "streetAddress"}))
+            item.city = __get_text(address.find(attrs={"itemprop": "addressLocality"}))
+            item.state = __get_text(address.find(attrs={"itemprop": "addressRegion"}))
 
-        items.append(item)
+            item.description = __get_text(house_card.find(attrs={"itemprop": "description"}))
+            item.url = address.find("a").get("href")
+
+            items.append(item)
+        page += 1
 
     return items
