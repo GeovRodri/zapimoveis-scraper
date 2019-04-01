@@ -37,4 +37,4 @@ params = dict(params)
 
 # Run the query.
 for item in search(**params):
-    print(item.url)
+    print("price: {}, url: {}\n".format(item.price, item.url))
