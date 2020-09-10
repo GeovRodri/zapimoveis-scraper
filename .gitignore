@@ -3,6 +3,7 @@ MANIFEST
 
 # IDE
 .idea/
+venv/
 
 # Packages
 *.egg

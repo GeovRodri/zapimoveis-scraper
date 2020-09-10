@@ -54,13 +54,15 @@ def get_page(url):
 
 
 def __get_text(element, content=False):
+    text = ''
     if element is not None:
         if content is False:
-            return element.getText()
+            text = element.getText()
         else:
-            return element.get("content")
+            text = element.get("content")
 
-    return ''
+    text.replace('\\n', '')
+    return text.strip()
 
 
 def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.casas.value):
@@ -71,27 +73,18 @@ def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.a
         html = get_page(url_home % vars())
         soup = BeautifulSoup(html, 'html.parser')
 
-        houses_cards = soup.find_all(attrs={"class": "minificha"})
+        houses_cards = soup.find_all(attrs={"class": "card-listing"})
         for house_card in houses_cards:
-            specifications = house_card.find(attrs={"class": "caracteristicas"})
+            specifications = house_card.find(attrs={"class": "simple-card__actions"})
 
             item = ZapItem()
-            item.price = __get_text(specifications.find(attrs={"class": "preco"}))
-            item.bedrooms = __get_text(specifications.find(attrs={"class": "icone-quartos"}))
-            item.suites = __get_text(specifications.find(attrs={"class": "icone-suites"}))
-            item.vacancies = __get_text(specifications.find(attrs={"class": "icone-vagas"}))
-            item.total_area_m2 = __get_text(specifications.find(attrs={"class": "icone-area"}))
-
-            address = house_card.find(attrs={"class": "endereco"})
-            item.district = __get_text(address.find("strong"))
-            item.country = __get_text(address.find(attrs={"itemprop": "addressCountry"}), True)
-            item.postal_code = __get_text(address.find(attrs={"itemprop": "postalCode"}), True)
-            item.street = __get_text(address.find(attrs={"itemprop": "streetAddress"}))
-            item.city = __get_text(address.find(attrs={"itemprop": "addressLocality"}))
-            item.state = __get_text(address.find(attrs={"itemprop": "addressRegion"}))
-
-            item.description = __get_text(house_card.find(attrs={"itemprop": "description"}))
-            item.url = address.find("a").get("href")
+            item.price = __get_text(house_card.find(attrs={"class": "js-price"}))
+            item.bedrooms = __get_text(specifications.find(attrs={"class": "js-bedrooms"}))
+            item.bathrooms = __get_text(specifications.find(attrs={"class": "js-bathrooms"}))
+            item.vacancies = __get_text(specifications.find(attrs={"class": "js-parking-spaces"}))
+            item.total_area_m2 = __get_text(specifications.find(attrs={"class": "js-areas"}))
+            item.address = __get_text(specifications.find(attrs={"class": "simple-card__address"}))
+            item.description = __get_text(house_card.find(attrs={"class": "simple-card__description"}))
 
             items.append(item)
         page += 1

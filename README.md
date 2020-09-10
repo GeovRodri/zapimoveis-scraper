@@ -11,4 +11,4 @@ Usage example
 
 Installing
 ----------
-    pip install pip install zapimoveis_scraper
+    pip install zapimoveis_scraper
