@@ -32,6 +32,7 @@ from bs4 import BeautifulSoup
 
 from zapimoveis_scraper.enums import ZapAcao, ZapTipo
 from zapimoveis_scraper.item import ZapItem
+from collections import defaultdict
 
 __all__ = [
     # Main search function.
@@ -64,8 +65,28 @@ def __get_text(element, content=False):
     text.replace('\\n', '')
     return text.strip()
 
+def convert_dict(data):
+    '''
+    Simple function to convert the data from objects to a dictionary
+    
+    dicts: Empty default dictionary
+    Keys: List with the keys for the dictionary
+    '''
+    #start dictonary 
+    dicts = defaultdict(list)
+    #create a list with the keys 
+    keys = ['price','bedrooms','bathrooms','vacancies','total_area_m2','address','description']
+    
+    #simple for loops to create the dictionary
+    for i in keys:
+        for j in range(len(data)):
+            to_dict = data[j].__dict__
+            dicts[i].append(to_dict['%s' % i])
+            
+    return dicts
 
-def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.casas.value):
+
+def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.casas.value,dictionary_out = False):
     page = 1
     items = []
 
@@ -88,5 +109,7 @@ def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.a
 
             items.append(item)
         page += 1
-
-    return items
+    if dictionary_out == True:   
+        return convert_dict(items)
+    else:
+        return items
