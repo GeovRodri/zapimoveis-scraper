@@ -41,7 +41,7 @@ __all__ = [
 
 
 # URL templates to make urls searches.
-url_home = "https://www.zapimoveis.com.br/%(acao)s/%(tipo)s/%(localization)s/#{\"pagina\":\"%(page)s\",\"formato\":\"Lista\"}"
+url_home = "https://www.zapimoveis.com.br/%(acao)s/%(tipo)s/%(localization)s/?pagina=%(page)s"
 
 # Default user agent, unless instructed by the user to change it.
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
@@ -68,13 +68,13 @@ def __get_text(element, content=False):
 def convert_dict(data):
     '''
     Simple function to convert the data from objects to a dictionary
-    
+
     dicts: Empty default dictionary
     Keys: List with the keys for the dictionary
     '''
     #start dictonary 
     dicts = defaultdict(list)
-    #create a list with the keys 
+    #create a list with the keys
     keys = ['price','bedrooms','bathrooms','vacancies','total_area_m2','address','description']
     
     #simple for loops to create the dictionary
@@ -86,7 +86,7 @@ def convert_dict(data):
     return dicts
 
 
-def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.casas.value,dictionary_out = False):
+def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.casas.value, dictionary_out = False):
     page = 1
     items = []
 
@@ -99,7 +99,7 @@ def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.a
             specifications = house_card.find(attrs={"class": "simple-card__actions"})
 
             item = ZapItem()
-            item.price = __get_text(house_card.find(attrs={"class": "js-price"}))
+            item.price = __get_text(house_card.find(attrs={"class": "js-price"})).replace('/mês', '').replace('\n', '')
             item.bedrooms = __get_text(specifications.find(attrs={"class": "js-bedrooms"}))
             item.bathrooms = __get_text(specifications.find(attrs={"class": "js-bathrooms"}))
             item.vacancies = __get_text(specifications.find(attrs={"class": "js-parking-spaces"}))
@@ -109,7 +109,8 @@ def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.a
 
             items.append(item)
         page += 1
-    if dictionary_out == True:   
+
+    if dictionary_out:
         return convert_dict(items)
-    else:
-        return items
+
+    return items
