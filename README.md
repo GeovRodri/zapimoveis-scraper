@@ -20,7 +20,7 @@ zap.search(localization="go+goiania++setor-oeste", num_pages=5)
 ```
 
 #### Available search parameters:
-* Localization (string): location in which the search will be performed
+* localization (string): location in which the search will be performed
   * default: 'go+goiania++setor-marista'
   * The search string is available on the search url of zap imóveis. Eg: https://www.zapimoveis.com.br/aluguel/imoveis/rj+rio-de-janeiro+ilha-do-governador+cacuia/
 * num\_pages (int): Number of pages to scrape
@@ -31,3 +31,14 @@ zap.search(localization="go+goiania++setor-oeste", num_pages=5)
   * default: 'casas'
 * dictionaty\_out (boolean): Specifies the method output (list of objects or dictionary)
   * default: False
+
+#### Scraped attributes:
+The objects returned from `search` contain the following attributes:
+* description: property description
+* price: property price (monthly)
+* bedrooms: number of bedrooms on property
+* bathrooms: number of bathrooms on property
+* total\_area\_m2: property area (square meters)
+* vacancies: parking spots available on property
+* address: property address
+
