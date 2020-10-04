@@ -1,8 +1,6 @@
 # Zap Imoveis Scraper
-============
 
 zapimoveis-scraper is a Python package that works as a crawler and scraper using beautifulsoup4 to get data from [zap imóveis](https://zapimoveis.com.br).
-
 
 
 ### Installation
@@ -17,12 +15,14 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install zapimov
 ```python
 import zapimoveis_scraper as zap
 
-  zap.search(localization="go+goiania++setor-oeste", num_pages=5) # returns a list with objects containing scraped data
+# returns a list with objects containing scraped data
+zap.search(localization="go+goiania++setor-oeste", num_pages=5) 
 ```
 
 #### Available search parameters:
 * Localization (string): location in which the search will be performed
   * default: 'go+goiania++setor-marista'
+  * The search string is available on the search url of zap imóveis. Eg: https://www.zapimoveis.com.br/aluguel/imoveis/rj+rio-de-janeiro+ilha-do-governador+cacuia/
 * num\_pages (int): Number of pages to scrape
   * default: 1
 * acao (string): type of contract. Possible values: 'venda', 'aluguel', 'lancamentos'
