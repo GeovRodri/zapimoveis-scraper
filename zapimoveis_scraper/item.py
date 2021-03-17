@@ -7,3 +7,4 @@ class ZapItem:
     total_area_m2 = None
     vacancies = None
     address = None
+    link = None
