@@ -120,7 +120,8 @@ def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.a
         listings = get_listings(soup)
 
         for listing in listings:
-            items.append(get_ZapItem(listing))
+            if 'type' not in listing or listing['type'] != 'nearby':
+                items.append(get_ZapItem(listing))
 
         page += 1
 
