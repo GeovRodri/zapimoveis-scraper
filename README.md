@@ -41,4 +41,4 @@ The objects returned from `search` contain the following attributes:
 * total\_area\_m2: property area (square meters)
 * vacancies: parking spots available on property
 * address: property address
-
+* link: link of the property

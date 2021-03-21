@@ -76,7 +76,7 @@ def convert_dict(data):
     #start dictonary 
     dicts = defaultdict(list)
     #create a list with the keys
-    keys = ['price','bedrooms','bathrooms','vacancies','total_area_m2','address','description']
+    keys = ['price','bedrooms','bathrooms','vacancies','total_area_m2','address','description', 'link']
     
     #simple for loops to create the dictionary
     for i in keys:
@@ -99,10 +99,10 @@ def get_ZapItem(listing):
     item = ZapItem()
     item.link = listing['link']['href']
     item.price = listing['listing']['pricingInfos'][0]['price']
-    item.bedrooms = listing['listing']['bedrooms'][0]
-    item.bathrooms = listing['listing']['bathrooms'][0]
+    item.bedrooms = listing['listing']['bedrooms'][0] if len(listing['listing']['bedrooms']) > 0 else 0
+    item.bathrooms = listing['listing']['bathrooms'][0] if len(listing['listing']['bathrooms']) > 0 else 0
     item.vacancies =  listing['listing']['parkingSpaces'][0] if len(listing['listing']['parkingSpaces']) > 0 else 0
-    item.total_area_m2 = listing['listing']['usableAreas'][0]
+    item.total_area_m2 = listing['listing']['usableAreas'][0] if len(listing['listing']['usableAreas']) > 0 else 0
     item.address = (listing['link']['data']['street'] + ", " + listing['link']['data']['neighborhood']).strip(',').strip()
     item.description = listing['listing']['title']
 
@@ -129,4 +129,3 @@ def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.a
         return convert_dict(items)
 
     return items
-	
