@@ -29,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
+import json
 
 from zapimoveis_scraper.enums import ZapAcao, ZapTipo
 from zapimoveis_scraper.item import ZapItem
@@ -86,6 +87,28 @@ def convert_dict(data):
     return dicts
 
 
+def get_listings(soup):
+    page_data_string = soup.find(lambda tag:tag.name=="script" and isinstance(tag.string, str) and tag.string.startswith("window"))
+
+    json_string = page_data_string.string.replace("window.__INITIAL_STATE__=","").replace(";(function(){var s;(s=document.currentScript||document.scripts[document.scripts.length-1]).parentNode.removeChild(s);}());","")
+
+    return json.loads(json_string)['results']['listings']
+
+
+def get_ZapItem(listing):
+    item = ZapItem()
+    item.link = listing['link']['href']
+    item.price = listing['listing']['pricingInfos'][0]['price']
+    item.bedrooms = listing['listing']['bedrooms'][0]
+    item.bathrooms = listing['listing']['bathrooms'][0]
+    item.vacancies =  listing['listing']['parkingSpaces'][0] if len(listing['listing']['parkingSpaces']) > 0 else 0
+    item.total_area_m2 = listing['listing']['usableAreas'][0]
+    item.address = (listing['link']['data']['street'] + ", " + listing['link']['data']['neighborhood']).strip(',').strip()
+    item.description = listing['listing']['title']
+
+    return item
+
+
 def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.casas.value, dictionary_out = False):
     page = 1
     items = []
@@ -94,23 +117,16 @@ def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.a
         html = get_page(url_home % vars())
         soup = BeautifulSoup(html, 'html.parser')
 
-        houses_cards = soup.find_all(attrs={"class": "card-listing"})
-        for house_card in houses_cards:
-            specifications = house_card.find(attrs={"class": "simple-card__actions"})
+        listings = get_listings(soup)
 
-            item = ZapItem()
-            item.price = __get_text(house_card.find(attrs={"class": "js-price"})).replace('/mês', '').replace('\n', '')
-            item.bedrooms = __get_text(specifications.find(attrs={"class": "js-bedrooms"}))
-            item.bathrooms = __get_text(specifications.find(attrs={"class": "js-bathrooms"}))
-            item.vacancies = __get_text(specifications.find(attrs={"class": "js-parking-spaces"}))
-            item.total_area_m2 = __get_text(specifications.find(attrs={"class": "js-areas"}))
-            item.address = __get_text(specifications.find(attrs={"class": "simple-card__address"}))
-            item.description = __get_text(house_card.find(attrs={"class": "simple-card__description"}))
+        for listing in listings:
+            if 'type' not in listing or listing['type'] != 'nearby':
+                items.append(get_ZapItem(listing))
 
-            items.append(item)
         page += 1
 
     if dictionary_out:
         return convert_dict(items)
 
     return items
+	
