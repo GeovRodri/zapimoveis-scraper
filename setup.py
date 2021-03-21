@@ -43,10 +43,11 @@ metadata = dict(
     packages=['zapimoveis_scraper'],
     scripts=[join('scripts', 'zapimoveis')],
     version="0.3.0",
-    description="zapimoveis-scraper is a Python package that works as a crawler and scraper using beautifulsoup4 to get data from zap imóveis",
+    description="zapimoveis-scraper is a Python package that works as a crawler and scraper using beautifulsoup4 to get data from zap imoveis",
     author="Geovany Rodrigues",
     author_email="geovanyscv@gmail.com",
     url='https://github.com/GeovRodri/zapimoveis-scraper',
+    long_description_content_type="text/markdown",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
@@ -67,7 +68,7 @@ except ImportError:
 
 # Get the long description from the readme file.
 try:
-    metadata['long_description'] = open(join(here, 'README.md'), 'rU').read()
+    metadata['long_description'] = open(join(here, 'README.md'), 'r').read()
 except Exception:
     pass
 
