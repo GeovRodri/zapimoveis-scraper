@@ -98,7 +98,7 @@ def get_listings(soup):
 def get_ZapItem(listing):
     item = ZapItem()
     item.link = listing['link']['href']
-    item.price = listing['listing']['pricingInfos'][0]['price']
+    item.price = listing['listing']['pricingInfos'][0].get('price', None) if len(listing['listing']['pricingInfos']) > 0 else 0
     item.bedrooms = listing['listing']['bedrooms'][0] if len(listing['listing']['bedrooms']) > 0 else 0
     item.bathrooms = listing['listing']['bathrooms'][0] if len(listing['listing']['bathrooms']) > 0 else 0
     item.vacancies =  listing['listing']['parkingSpaces'][0] if len(listing['listing']['parkingSpaces']) > 0 else 0
