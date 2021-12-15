@@ -76,7 +76,7 @@ def convert_dict(data):
     #start dictonary 
     dicts = defaultdict(list)
     #create a list with the keys
-    keys = ['price','bedrooms','bathrooms','vacancies','total_area_m2','address','description', 'link']
+    keys = ['price', 'condo_fee', 'bedrooms','bathrooms','vacancies','total_area_m2','address','description', 'link']
     
     #simple for loops to create the dictionary
     for i in keys:
@@ -99,6 +99,7 @@ def get_ZapItem(listing):
     item = ZapItem()
     item.link = listing['link']['href']
     item.price = listing['listing']['pricingInfos'][0].get('price', None) if len(listing['listing']['pricingInfos']) > 0 else 0
+    item.condo_fee = listing['listing']['pricingInfos'][0].get('monthlyCondoFee', None) if len(listing['listing']['pricingInfos']) > 0 else 0
     item.bedrooms = listing['listing']['bedrooms'][0] if len(listing['listing']['bedrooms']) > 0 else 0
     item.bathrooms = listing['listing']['bathrooms'][0] if len(listing['listing']['bathrooms']) > 0 else 0
     item.vacancies =  listing['listing']['parkingSpaces'][0] if len(listing['listing']['parkingSpaces']) > 0 else 0
