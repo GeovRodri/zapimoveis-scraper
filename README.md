@@ -31,6 +31,8 @@ zap.search(localization="go+goiania++setor-oeste", num_pages=5)
   * default: 'casas'
 * dictionaty\_out (boolean): Specifies the method output (list of objects or dictionary)
   * default: False
+* time_to_wait (float): time to wait until the script scrapes the next page
+  * default: 0
 
 #### Scraped attributes:
 The objects returned from `search` contain the following attributes:

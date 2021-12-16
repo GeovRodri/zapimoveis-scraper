@@ -30,6 +30,7 @@
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 import json
+import time
 
 from zapimoveis_scraper.enums import ZapAcao, ZapTipo
 from zapimoveis_scraper.item import ZapItem
@@ -110,7 +111,7 @@ def get_ZapItem(listing):
     return item
 
 
-def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.casas.value, dictionary_out = False):
+def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.apartamentos.value, dictionary_out = False, time_to_wait=0):
     page = 1
     items = []
 
@@ -125,7 +126,8 @@ def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.a
                 items.append(get_ZapItem(listing))
 
         page += 1
-
+        time.sleep(time_to_wait)
+        
     if dictionary_out:
         return convert_dict(items)
 
