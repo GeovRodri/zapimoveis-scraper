@@ -36,6 +36,7 @@ zap.search(localization="go+goiania++setor-oeste", num_pages=5)
 The objects returned from `search` contain the following attributes:
 * description: property description
 * price: property price (monthly)
+* condo\_fee: property condo fee (monthly)
 * bedrooms: number of bedrooms on property
 * bathrooms: number of bathrooms on property
 * total\_area\_m2: property area (square meters)
