@@ -31,11 +31,14 @@ zap.search(localization="go+goiania++setor-oeste", num_pages=5)
   * default: 'casas'
 * dictionaty\_out (boolean): Specifies the method output (list of objects or dictionary)
   * default: False
+* time_to_wait (float): time to wait until the script scrapes the next page
+  * default: 0
 
 #### Scraped attributes:
 The objects returned from `search` contain the following attributes:
 * description: property description
 * price: property price (monthly)
+* condo\_fee: property condo fee (monthly)
 * bedrooms: number of bedrooms on property
 * bathrooms: number of bathrooms on property
 * total\_area\_m2: property area (square meters)

@@ -30,6 +30,7 @@
 from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 import json
+import time
 
 from zapimoveis_scraper.enums import ZapAcao, ZapTipo
 from zapimoveis_scraper.item import ZapItem
@@ -76,7 +77,7 @@ def convert_dict(data):
     #start dictonary 
     dicts = defaultdict(list)
     #create a list with the keys
-    keys = ['price','bedrooms','bathrooms','vacancies','total_area_m2','address','description', 'link']
+    keys = ['price', 'condo_fee', 'bedrooms','bathrooms','vacancies','total_area_m2','address','description', 'link']
     
     #simple for loops to create the dictionary
     for i in keys:
@@ -99,6 +100,7 @@ def get_ZapItem(listing):
     item = ZapItem()
     item.link = listing['link']['href']
     item.price = listing['listing']['pricingInfos'][0].get('price', None) if len(listing['listing']['pricingInfos']) > 0 else 0
+    item.condo_fee = listing['listing']['pricingInfos'][0].get('monthlyCondoFee', None) if len(listing['listing']['pricingInfos']) > 0 else 0
     item.bedrooms = listing['listing']['bedrooms'][0] if len(listing['listing']['bedrooms']) > 0 else 0
     item.bathrooms = listing['listing']['bathrooms'][0] if len(listing['listing']['bathrooms']) > 0 else 0
     item.vacancies =  listing['listing']['parkingSpaces'][0] if len(listing['listing']['parkingSpaces']) > 0 else 0
@@ -109,7 +111,7 @@ def get_ZapItem(listing):
     return item
 
 
-def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.casas.value, dictionary_out = False):
+def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.aluguel.value, tipo=ZapTipo.apartamentos.value, dictionary_out = False, time_to_wait=0):
     page = 1
     items = []
 
@@ -124,7 +126,8 @@ def search(localization='go+goiania++setor-marista', num_pages=1, acao=ZapAcao.a
                 items.append(get_ZapItem(listing))
 
         page += 1
-
+        time.sleep(time_to_wait)
+        
     if dictionary_out:
         return convert_dict(items)
 
